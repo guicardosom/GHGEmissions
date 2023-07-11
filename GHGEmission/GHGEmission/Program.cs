@@ -11,6 +11,7 @@
 using System;
 using System.Xml;   // XmlDocument class and DOM interfaces
 using System.IO;    // IOException class
+using GHGEmission;
 
 namespace GHGEmissions
 {
@@ -18,6 +19,8 @@ namespace GHGEmissions
     {
         const string XmlFile = @"../../../data/ghg-canada.xml";
         const string lineSeparator = "---------------------------------------------------------------------------";
+
+        private EmissionsReport report = EmissionsReport.GetInstance();
 
         static void Main()
         {

@@ -19,7 +19,7 @@ namespace GHGEmission
             Source = "Oil and Gas";
         }
 
-        public EmissionsReport GetInstance()
+        public static EmissionsReport GetInstance()
         {
             if (_instance == null)
                 _instance = new EmissionsReport();
