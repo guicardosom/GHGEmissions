@@ -20,13 +20,12 @@ namespace GHGEmissions
         const string XmlFile = @"../../../data/ghg-canada.xml";
         const string lineSeparator = "---------------------------------------------------------------------------";
 
-        private EmissionsReport report = EmissionsReport.GetInstance();
+        private static EmissionsReport report = EmissionsReport.GetInstance();
 
         static void Main()
         {
             DisplayMenu("Main Menu");
-            DisplayMenu("Region Selection");
-            DisplayMenu("Source Selection");
+            MainMenuListener();
         }
 
         private static void DisplayMenu(string title)
@@ -81,6 +80,185 @@ namespace GHGEmissions
             }
             
             Console.WriteLine(lineSeparator + "\n\n");
+        }
+
+        private static void MainMenuListener()
+        {
+            Console.Write("Enter your selection: ");
+            string input = Console.ReadLine() ?? "";
+
+            switch (input.ToUpper())
+            {
+                case "1":
+                    report.StartingYear = GetValidYearInput("\nStarting year (1990 to 2019): ", 1990, 2019);
+                    report.EndingYear = GetValidYearInput($"\nEnding year ({report.StartingYear} to {int.Parse(report.StartingYear) + 4}): ", int.Parse(report.StartingYear), int.Parse(report.StartingYear) + 4);
+                    break;
+
+                case "2":
+                    DisplayMenu("Region Selection");
+                    RegionListener();
+                    break;
+
+                case "3":
+                    DisplayMenu("Source Selection");
+                    SourceListener();
+                    break;
+
+                case "4":
+                    break;
+
+                case "5":
+                    break;
+
+                case "X":
+                    Environment.Exit(0);
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid Main Menu Selection.");
+                    break;
+            }
+        }
+
+        private static void RegionListener()
+        {
+            Console.Write("Enter a region #: ");
+            string input = Console.ReadLine() ?? "";
+
+            switch (input)
+            {
+                case "1":
+                    report.Region = "Alberta";
+                    break;
+
+                case "2":
+                    report.Region = "British Columbia";
+                    break;
+
+                case "3":
+                    report.Region = "Manitoba";
+                    break;
+
+                case "4":
+                    report.Region = "New Brunswick";
+                    break;
+
+                case "5":
+                    report.Region = "Newfoundland and Labrador";
+                    break;
+
+                case "6":
+                    report.Region = "Northwest Territories";
+                    break;
+
+                case "7":
+                    report.Region = "Northwest Territories and Nunavut";
+                    break;
+
+                case "8":
+                    report.Region = "Nova Scotia";
+                    break;
+
+                case "9":
+                    report.Region = "Nunavut";
+                    break;
+
+                case "10":
+                    report.Region = "Ontario";
+                    break;
+
+                case "11":
+                    report.Region = "Prince Edward Island";
+                    break;
+
+                case "12":
+                    report.Region = "Quebec";
+                    break;
+
+                case "13":
+                    report.Region = "Saskatchewan";
+                    break;
+
+                case "14":
+                    report.Region = "Yukon";
+                    break;
+
+                case "15":
+                    report.Region = "Canada";
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid Region Menu Selection.");
+                    break;
+            }
+        }
+
+        private static void SourceListener()
+        {
+            Console.Write("Enter a source #: ");
+            string input = Console.ReadLine() ?? "";
+
+            switch (input)
+            {
+                case "1":
+                    report.Source = "Agriculture";
+                    break;
+
+                case "2":
+                    report.Source = "Buildings";
+                    break;
+
+                case "3":
+                    report.Source = "Heavy Industry";
+                    break;
+
+                case "4":
+                    report.Source = "Light Manufactoring, Construction and Forest Resources";
+                    break;
+
+                case "5":
+                    report.Source = "Oil and Gas";
+                    break;
+
+                case "6":
+                    report.Source = "Transport";
+                    break;
+
+                case "7":
+                    report.Source = "Waste";
+                    break;
+
+                case "8":
+                    report.Source = "Total";
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid Source Menu Selection.");
+                    break;
+            }
+        }
+
+        private static string GetValidYearInput(string prompt, int minValue, int maxValue)
+        {
+            string? year = string.Empty;
+            bool invalid = true;
+
+            while (invalid)
+            {
+                Console.Write(prompt);
+                year = Console.ReadLine();
+
+                if (!string.IsNullOrEmpty(year) && int.TryParse(year, out int yearInt) && yearInt >= minValue && yearInt <= maxValue)
+                {
+                    invalid = false;
+                }
+                else
+                {
+                    Console.WriteLine($"ERROR: Input must be an integer between {minValue} and {maxValue}");
+                }
+            }
+
+            return year!;
         }
     }
 }
