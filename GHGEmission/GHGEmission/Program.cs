@@ -24,8 +24,12 @@ namespace GHGEmissions
 
         static void Main()
         {
-            DisplayMenu("Main Menu");
-            MainMenuListener();
+            while (true)
+            {
+                DisplayMenu("Main Menu");
+                MainMenuListener();
+                ClearConsole();
+            }
         }
 
         private static void DisplayMenu(string title)
@@ -91,15 +95,17 @@ namespace GHGEmissions
             {
                 case "1":
                     report.StartingYear = GetValidYearInput("\nStarting year (1990 to 2019): ", 1990, 2019);
-                    report.EndingYear = GetValidYearInput($"\nEnding year ({report.StartingYear} to {int.Parse(report.StartingYear) + 4}): ", int.Parse(report.StartingYear), int.Parse(report.StartingYear) + 4);
+                    report.EndingYear = GetValidYearInput($"Ending year ({report.StartingYear} to {int.Parse(report.StartingYear) + 4}): ", int.Parse(report.StartingYear), int.Parse(report.StartingYear) + 4);
                     break;
 
                 case "2":
+                    Console.Clear();
                     DisplayMenu("Region Selection");
                     RegionListener();
                     break;
 
                 case "3":
+                    Console.Clear();
                     DisplayMenu("Source Selection");
                     SourceListener();
                     break;
@@ -113,7 +119,7 @@ namespace GHGEmissions
                 case "X":
                     Environment.Exit(0);
                     break;
-
+                    
                 default:
                     Console.WriteLine("Invalid Main Menu Selection.");
                     break;
@@ -259,6 +265,16 @@ namespace GHGEmissions
             }
 
             return year!;
+        }
+
+        private static void ClearConsole()
+        {
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey();
+            Console.Clear();
+            //just clearing the console doesn't clear everything if there's a scrollbar (hidden content)
+            //the following line fixes that issue (for some reason)
+            Console.WriteLine("\x1b[3J");
         }
     }
 }
