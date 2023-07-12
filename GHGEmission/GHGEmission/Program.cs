@@ -37,11 +37,11 @@ namespace GHGEmissions
             switch(title)
             {
                 case "Main Menu":
-                    Console.WriteLine("  (1) To adjust the range of years (currently 2015 to 2019)");
-                    Console.WriteLine("  (2) To select a different region (currently Canada)");
-                    Console.WriteLine("  (3) To select a different HG source (currently Oil and Gas)");
-                    Console.WriteLine("  (4) To learn about Canada's emissions");
-                    Console.WriteLine("  (5) To learn about the Oil and Gas sector's emissions");
+                    Console.WriteLine($"  (1) To adjust the range of years (currently {report.StartingYear} to {report.EndingYear})");
+                    Console.WriteLine($"  (2) To select a different region (currently {report.Region})");
+                    Console.WriteLine($"  (3) To select a different GHG source (currently {report.Source})");
+                    Console.WriteLine($"  (4) To learn about {report.Region}'s emissions");
+                    Console.WriteLine($"  (5) To learn about the {report.Source} sector's emissions");
                     Console.WriteLine("  (X) To quit");
                     break;
 
