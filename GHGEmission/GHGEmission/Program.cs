@@ -18,7 +18,7 @@ namespace GHGEmissions
     internal class Program
     {
         const string XmlFile = @"../../../data/ghg-canada.xml";
-        const string lineSeparator = "---------------------------------------------------------------------------";
+        const string lineSeparator = "----------------------------------------------------------------------------------------------------------";
 
         private static EmissionsReport report = EmissionsReport.GetInstance();
 
@@ -35,7 +35,7 @@ namespace GHGEmissions
         private static void DisplayMenu(string title)
         {
             Console.WriteLine(lineSeparator);
-            Console.WriteLine("".PadLeft(10) + $"Greenhouse Gas Emissions in Canada ~ {title}");
+            Console.WriteLine("".PadLeft(30) + $"Greenhouse Gas Emissions in Canada ~ {title}");
             Console.WriteLine(lineSeparator);
 
             switch(title)
@@ -111,9 +111,14 @@ namespace GHGEmissions
                     break;
 
                 case "4":
+                    Console.Clear();
+                    Dictionary<string, List<string>> emissionsBySource = GenerateRegionReport();
+                    DisplayReport("Region", emissionsBySource);
                     break;
 
                 case "5":
+                    Console.Clear();
+                    GenerateSourceReport();
                     break;
 
                 case "X":
@@ -244,6 +249,97 @@ namespace GHGEmissions
             }
         }
 
+        private static Dictionary<string, List<string>> GenerateRegionReport()
+        {
+            Dictionary<string, List<string>> emissionsBySource = new();
+
+            XmlDocument doc = new();
+            doc.Load(XmlFile);
+
+            XmlNodeList regionList = doc.GetElementsByTagName("region");
+            for (int i = 0; i < regionList.Count; i++)
+            {
+                XmlAttributeCollection? regionAttrs = regionList.Item(i)!.Attributes;
+                if (regionAttrs?.GetNamedItem("name")?.InnerText == report.Region)
+                {
+                    XmlNodeList sourceList = regionList.Item(i)!.ChildNodes;
+                    for (int j = 0; j < sourceList.Count; j++)
+                    {
+                        XmlAttributeCollection? sourceAttrs = sourceList.Item(j)!.Attributes;
+                        XmlNodeList emissionList = sourceList.Item(j)!.ChildNodes;
+                        for (int k = 0; k < emissionList.Count; k++)
+                        {
+                            XmlAttributeCollection? emissionAttrs = emissionList.Item(k)!.Attributes;
+                            for (int l = int.Parse(report.StartingYear); l <= int.Parse(report.EndingYear); l++)
+                            {
+                                if (emissionAttrs?.GetNamedItem("year")?.InnerText == l.ToString())
+                                {
+                                    string key = sourceAttrs!.GetNamedItem("description")!.InnerText;
+                                    string value = emissionList.Item(k)!.InnerText;
+                                    if (emissionsBySource.ContainsKey(key))
+                                    {
+                                        emissionsBySource[key].Add(value);
+                                    }
+                                    else
+                                    {
+                                        List<string> newList = new List<string> { value };
+                                        emissionsBySource.Add(key, newList);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            return emissionsBySource;
+        }
+
+        private static Dictionary<string, List<string>> GenerateSourceReport()
+        {
+            Dictionary<string, List<string>> emissionsByRegion = new();
+
+            XmlDocument doc = new();
+            doc.Load(XmlFile);
+
+
+
+            return emissionsByRegion;
+        }
+
+        private static void DisplayReport(string type, Dictionary<string, List<string>> emissions)
+        {
+            DisplayReportHeader(type);
+
+            foreach (KeyValuePair<string, List<string>> kvp in emissions)
+            {
+                Console.Write(kvp.Key.PadLeft(54));
+
+                foreach (string value in kvp.Value)
+                {
+                    Console.Write((Math.Truncate(double.Parse(value) * 100) / 100).ToString().PadLeft(10));
+                }
+
+                Console.WriteLine();
+            }
+
+            Console.WriteLine(lineSeparator + "\n\n");
+        }
+
+        private static void DisplayReportHeader(string type)
+        {
+            Console.WriteLine(lineSeparator);
+            Console.WriteLine("".PadLeft(30) + $"Greenhouse Gas Emissions (Megatonnes) ~ {(type == "Region" ? report.Region : report.Source)}");
+            Console.WriteLine(lineSeparator);
+
+            Console.Write(type == "Region" ? "Source".PadLeft(54) : "Region".PadLeft(54));
+            for (int i = int.Parse(report.StartingYear); i <= int.Parse(report.EndingYear); i++)
+                Console.Write(i.ToString().PadLeft(10));
+            Console.WriteLine("\n" + "------".PadLeft(54) + "----".PadLeft(10) + "----".PadLeft(10) + "----".PadLeft(10) + "----".PadLeft(10) + "----".PadLeft(10));
+        }
+
         private static string GetValidYearInput(string prompt, int minValue, int maxValue)
         {
             string? year = string.Empty;
@@ -273,7 +369,7 @@ namespace GHGEmissions
             Console.ReadKey();
             Console.Clear();
             //just clearing the console doesn't clear everything if there's a scrollbar (hidden content)
-            //the following line fixes that issue (for some reason)
+            //the following line fixes the scrollbar issue (for some reason)
             Console.WriteLine("\x1b[3J");
         }
     }
