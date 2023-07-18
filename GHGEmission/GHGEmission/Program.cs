@@ -12,6 +12,7 @@ using System;
 using System.Xml;   // XmlDocument class and DOM interfaces
 using System.IO;    // IOException class
 using GHGEmission;
+using System.Xml.XPath;
 
 namespace GHGEmissions
 {
@@ -118,7 +119,8 @@ namespace GHGEmissions
 
                 case "5":
                     Console.Clear();
-                    GenerateSourceReport();
+                    Dictionary<string, List<string>> emissionsByRegion = GenerateSourceReport();
+                    DisplayReport("Source", emissionsByRegion);
                     break;
 
                 case "X":
@@ -256,41 +258,48 @@ namespace GHGEmissions
             XmlDocument doc = new();
             doc.Load(XmlFile);
 
-            XmlNodeList regionList = doc.GetElementsByTagName("region");
-            for (int i = 0; i < regionList.Count; i++)
+            //XPathNavigator navigator = doc.CreateNavigator()!;
+            //string xpath = $"//region[@name='{report.Region}']/source/emissions[@year>={report.StartingYear} and @year<={report.EndingYear}]";
+
+            //XPathNodeIterator iterator = navigator.Select(xpath);
+            //while (iterator.MoveNext())
+            //{
+            //    XPathNavigator emissionNode = iterator.Current!;
+            //    string key = emissionNode.SelectSingleNode("parent::source/@description")!.Value;
+            //    string value = emissionNode.Value;
+
+            //    if (emissionsBySource.ContainsKey(key))
+            //        emissionsBySource[key].Add(value);
+            //    else
+            //        emissionsBySource.Add(key, new List<string> { value });
+            //}
+
+            XPathNavigator navigator = doc.CreateNavigator()!;
+            string regionXPath = $"//region[@name='{report.Region}']";
+            XPathNodeIterator regionIterator = navigator.Select(regionXPath);
+
+            while (regionIterator.MoveNext())
             {
-                XmlAttributeCollection? regionAttrs = regionList.Item(i)!.Attributes;
-                if (regionAttrs?.GetNamedItem("name")?.InnerText == report.Region)
+                XPathNavigator regionNode = regionIterator.Current!;
+
+                XPathNodeIterator sourceIterator = regionNode.Select("source");
+                while (sourceIterator.MoveNext())
                 {
-                    XmlNodeList sourceList = regionList.Item(i)!.ChildNodes;
-                    for (int j = 0; j < sourceList.Count; j++)
+                    XPathNavigator sourceNode = sourceIterator.Current!;
+                    string sourceDescription = sourceNode.GetAttribute("description", "");
+
+                    List<string> emissions = new List<string>();
+
+                    for (int year = int.Parse(report.StartingYear); year <= int.Parse(report.EndingYear); year++)
                     {
-                        XmlAttributeCollection? sourceAttrs = sourceList.Item(j)!.Attributes;
-                        XmlNodeList emissionList = sourceList.Item(j)!.ChildNodes;
-                        for (int k = 0; k < emissionList.Count; k++)
-                        {
-                            XmlAttributeCollection? emissionAttrs = emissionList.Item(k)!.Attributes;
-                            for (int l = int.Parse(report.StartingYear); l <= int.Parse(report.EndingYear); l++)
-                            {
-                                if (emissionAttrs?.GetNamedItem("year")?.InnerText == l.ToString())
-                                {
-                                    string key = sourceAttrs!.GetNamedItem("description")!.InnerText;
-                                    string value = emissionList.Item(k)!.InnerText;
-                                    if (emissionsBySource.ContainsKey(key))
-                                    {
-                                        emissionsBySource[key].Add(value);
-                                    }
-                                    else
-                                    {
-                                        List<string> newList = new List<string> { value };
-                                        emissionsBySource.Add(key, newList);
-                                    }
-                                }
-                            }
-                        }
+                        string emissionXPath = $".//emissions[@year='{year}']";
+                        XPathNodeIterator emissionIterator = sourceNode.Select(emissionXPath);
+
+                        string value = emissionIterator.MoveNext() ? emissionIterator.Current!.Value : "-";
+                        emissions.Add(value);
                     }
 
-                    break;
+                    emissionsBySource.Add(sourceDescription, emissions);
                 }
             }
 
@@ -304,7 +313,50 @@ namespace GHGEmissions
             XmlDocument doc = new();
             doc.Load(XmlFile);
 
+            //XPathNavigator navigator = doc.CreateNavigator()!;
+            //string xpath = $"//region/source[@description='{report.Source}']/emissions[@year>={report.StartingYear} and @year<={report.EndingYear}]";
 
+            //XPathNodeIterator iterator = navigator.Select(xpath);
+            //while (iterator.MoveNext())
+            //{
+            //    XPathNavigator emissionNode = iterator.Current!;
+            //    string key = emissionNode.SelectSingleNode("ancestor::region/@name")!.Value;
+            //    string value = emissionNode.Value;
+
+            //    if (emissionsByRegion.ContainsKey(key))
+            //        emissionsByRegion[key].Add(value);
+            //    else
+            //        emissionsByRegion.Add(key, new List<string> { value });
+            //}
+
+            XPathNavigator navigator = doc.CreateNavigator()!;
+            string sourceXPath = $"//source[@description='{report.Source}']";
+            XPathNodeIterator sourceIterator = navigator.Select(sourceXPath);
+
+            while (sourceIterator.MoveNext())
+            {
+                XPathNavigator sourceNode = sourceIterator.Current!;
+
+                XPathNodeIterator regionIterator = sourceNode.Select("ancestor::region");
+                while (regionIterator.MoveNext())
+                {
+                    XPathNavigator regionNode = regionIterator.Current!;
+                    string regionName = regionNode.GetAttribute("name", "");
+
+                    List<string> emissions = new List<string>();
+
+                    for (int year = int.Parse(report.StartingYear); year <= int.Parse(report.EndingYear); year++)
+                    {
+                        string emissionXPath = $"//region[@name='{regionName}']/source[@description='{report.Source}']/emissions[@year='{year}']";
+                        XPathNodeIterator emissionIterator = regionNode.Select(emissionXPath);
+
+                        string value = emissionIterator.MoveNext() ? emissionIterator.Current!.Value : "-";
+                        emissions.Add(value);
+                    }
+
+                    emissionsByRegion.Add(regionName, emissions);
+                }
+            }
 
             return emissionsByRegion;
         }
@@ -319,7 +371,10 @@ namespace GHGEmissions
 
                 foreach (string value in kvp.Value)
                 {
-                    Console.Write((Math.Truncate(double.Parse(value) * 100) / 100).ToString().PadLeft(10));
+                    if (double.TryParse(value, out _))
+                        Console.Write(double.Parse(value).ToString("0.00").PadLeft(10));
+                    else
+                        Console.Write(value.PadLeft(10));
                 }
 
                 Console.WriteLine();
@@ -335,8 +390,10 @@ namespace GHGEmissions
             Console.WriteLine(lineSeparator);
 
             Console.Write(type == "Region" ? "Source".PadLeft(54) : "Region".PadLeft(54));
+
             for (int i = int.Parse(report.StartingYear); i <= int.Parse(report.EndingYear); i++)
                 Console.Write(i.ToString().PadLeft(10));
+
             Console.WriteLine("\n" + "------".PadLeft(54) + "----".PadLeft(10) + "----".PadLeft(10) + "----".PadLeft(10) + "----".PadLeft(10) + "----".PadLeft(10));
         }
 
@@ -351,13 +408,9 @@ namespace GHGEmissions
                 year = Console.ReadLine();
 
                 if (!string.IsNullOrEmpty(year) && int.TryParse(year, out int yearInt) && yearInt >= minValue && yearInt <= maxValue)
-                {
                     invalid = false;
-                }
                 else
-                {
                     Console.WriteLine($"ERROR: Input must be an integer between {minValue} and {maxValue}");
-                }
             }
 
             return year!;
