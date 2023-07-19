@@ -62,13 +62,13 @@ namespace GHGEmission
                 case "2":
                     Console.Clear();
                     DisplayMenu("Region Selection");
-                    RegionListener();
+                    SecondaryMenuListener("Region");
                     break;
 
                 case "3":
                     Console.Clear();
                     DisplayMenu("Source Selection");
-                    SourceListener();
+                    SecondaryMenuListener("Source");
                     break;
 
                 case "4":
@@ -84,6 +84,7 @@ namespace GHGEmission
                     break;
 
                 case "X":
+                    DataPersistence.SaveDataToXml(ConfigFile, report);
                     Environment.Exit(0);
                     break;
 
@@ -93,22 +94,33 @@ namespace GHGEmission
             }
         }
 
-        private static void RegionListener()
+        public static void SecondaryMenuListener(string type)
         {
-            Console.Write("Enter a region #: ");
-            string input = Console.ReadLine() ?? "";
-
-            List<string> regions = GetRegionList();
-            if (int.Parse(input) >= 0 && int.Parse(input) < regions.Count)
+            bool invalid = true;
+            while (invalid)
             {
-                for (int i = 0; i < regions.Count; i++)
+                Console.Write($"Enter a {(type == "Region" ? "region" : "source")} #: ");
+                string input = Console.ReadLine() ?? "";
+
+                List<string> reportChoices = type == "Region" ? GetRegionList() : GetSourceList();
+                if (int.Parse(input) > 0 && int.Parse(input) <= reportChoices.Count)
                 {
-                    if (int.Parse(input) == i + 1)
-                        report.Region = regions[i];
+                    for (int i = 0; i < reportChoices.Count; i++)
+                    {
+                        if (int.Parse(input) == i + 1)
+                        {
+                            if (type == "Region")
+                                report.Region = reportChoices[i];
+                            else if (type == "Source")
+                                report.Source = reportChoices[i];
+
+                            invalid = false;
+                        }
+                    }
                 }
+                else
+                    Console.WriteLine($"Invalid {type} Menu Selection.\n");
             }
-            else
-                Console.WriteLine("Invalid Region Menu Selection.");
         }
 
         private static List<string> GetRegionList()
@@ -145,24 +157,6 @@ namespace GHGEmission
             }
 
             return regions;
-        }
-
-        private static void SourceListener()
-        {
-            Console.Write("Enter a source #: ");
-            string input = Console.ReadLine() ?? "";
-
-            List<string> sources = GetSourceList();
-            if (int.Parse(input) >= 0 && int.Parse(input) < sources.Count)
-            {
-                for (int i = 0; i < sources.Count; i++)
-                {
-                    if (int.Parse(input) == i + 1)
-                        report.Source = sources[i];
-                }
-            }
-            else
-                Console.WriteLine("Invalid Source Menu Selection.");
         }
 
         private static List<string> GetSourceList()

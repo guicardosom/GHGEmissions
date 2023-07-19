@@ -13,9 +13,10 @@ namespace GHGEmission
     internal class Program
     {
         public const string XmlFile = @"../../../data/ghg-canada.xml";
+        public const string ConfigFile = @"../../../data/report-config.xml";
         public const string lineSeparator = "----------------------------------------------------------------------------------------------------------";
 
-        public static EmissionsReport report = EmissionsReport.GetInstance();
+        public static EmissionsReport report = DataPersistence.LoadDataFromXml(ConfigFile);
 
         static void Main()
         {
