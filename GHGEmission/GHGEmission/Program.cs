@@ -51,32 +51,42 @@ namespace GHGEmissions
                     break;
 
                 case "Region Selection":
-                    Console.WriteLine("  (1) Alberta");
-                    Console.WriteLine("  (2) British Columbia");
-                    Console.WriteLine("  (3) Manitoba");
-                    Console.WriteLine("  (4) New Brunswick");
-                    Console.WriteLine("  (5) Newfoundland and Labrador");
-                    Console.WriteLine("  (6) Northwest Territories");
-                    Console.WriteLine("  (7) Northwest Territories and Nunavut");
-                    Console.WriteLine("  (8) Nova Scotia");
-                    Console.WriteLine("  (9) Nunavut");
-                    Console.WriteLine("  (10) Ontario");
-                    Console.WriteLine("  (11) Prince Edward Island");
-                    Console.WriteLine("  (12) Quebec");
-                    Console.WriteLine("  (13) Saskatchewan");
-                    Console.WriteLine("  (14) Yukon");
-                    Console.WriteLine("  (15) Canada");
+                    List<string> regions = GetRegionList();
+
+                    for (int i = 0; i < regions.Count; i++)
+                        Console.WriteLine($"  ({i + 1}) {regions[i]}");
+
+                    //Console.WriteLine("  (1) Alberta");
+                    //Console.WriteLine("  (2) British Columbia");
+                    //Console.WriteLine("  (3) Manitoba");
+                    //Console.WriteLine("  (4) New Brunswick");
+                    //Console.WriteLine("  (5) Newfoundland and Labrador");
+                    //Console.WriteLine("  (6) Northwest Territories");
+                    //Console.WriteLine("  (7) Northwest Territories and Nunavut");
+                    //Console.WriteLine("  (8) Nova Scotia");
+                    //Console.WriteLine("  (9) Nunavut");
+                    //Console.WriteLine("  (10) Ontario");
+                    //Console.WriteLine("  (11) Prince Edward Island");
+                    //Console.WriteLine("  (12) Quebec");
+                    //Console.WriteLine("  (13) Saskatchewan");
+                    //Console.WriteLine("  (14) Yukon");
+                    //Console.WriteLine("  (15) Canada");
                     break;
 
                 case "Source Selection":
-                    Console.WriteLine("  (1) Agriculture");
-                    Console.WriteLine("  (2) Buildings");
-                    Console.WriteLine("  (3) Heavy Industry");
-                    Console.WriteLine("  (4) Light Manufactoring, Construction and Forest Resources");
-                    Console.WriteLine("  (5) Oil and Gas");
-                    Console.WriteLine("  (6) Transport");
-                    Console.WriteLine("  (7) Waste");
-                    Console.WriteLine("  (8) Total");
+                    List<string> sources = GetSourceList();
+
+                    for (int i = 0; i < sources.Count; i++)
+                        Console.WriteLine($"  ({i + 1}) {sources[i]}");
+
+                    //Console.WriteLine("  (1) Agriculture");
+                    //Console.WriteLine("  (2) Buildings");
+                    //Console.WriteLine("  (3) Heavy Industry");
+                    //Console.WriteLine("  (4) Light Manufactoring, Construction and Forest Resources");
+                    //Console.WriteLine("  (5) Oil and Gas");
+                    //Console.WriteLine("  (6) Transport");
+                    //Console.WriteLine("  (7) Waste");
+                    //Console.WriteLine("  (8) Total");
                     break;
 
                 default:
@@ -206,101 +216,199 @@ namespace GHGEmissions
             }
         }
 
+        private static List<string> GetRegionList()
+        {
+            List<string> regions = new();
+
+            try
+            {
+                XmlDocument doc = new();
+                doc.Load(XmlFile);
+
+                XPathNavigator navigator = doc.CreateNavigator()!;
+                string sourceXPath = "//region";
+                XPathNodeIterator sourceIterator = navigator.Select(sourceXPath);
+
+                while (sourceIterator.MoveNext())
+                {
+                    XPathNavigator sourceNode = sourceIterator.Current!;
+                    string region = sourceNode.GetAttribute("name", "");
+                    regions.Add(region);
+                }
+            }
+            catch(XmlException ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            catch (XPathException ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+
+            return regions;
+        }
+
         private static void SourceListener()
         {
             Console.Write("Enter a source #: ");
             string input = Console.ReadLine() ?? "";
 
-            switch (input)
+            List<string> sources = GetSourceList();
+            for (int i = 0; i < sources.Count; i++)
             {
-                case "1":
-                    report.Source = "Agriculture";
-                    break;
-
-                case "2":
-                    report.Source = "Buildings";
-                    break;
-
-                case "3":
-                    report.Source = "Heavy Industry";
-                    break;
-
-                case "4":
-                    report.Source = "Light Manufactoring, Construction and Forest Resources";
-                    break;
-
-                case "5":
-                    report.Source = "Oil and Gas";
-                    break;
-
-                case "6":
-                    report.Source = "Transport";
-                    break;
-
-                case "7":
-                    report.Source = "Waste";
-                    break;
-
-                case "8":
-                    report.Source = "Total";
-                    break;
-
-                default:
-                    Console.WriteLine("Invalid Source Menu Selection.");
-                    break;
+                if (int.Parse(input) == i + 1)
+                    report.Source = sources[i];
             }
+
+            //switch (input)
+            //{
+            //    case "1":
+            //        report.Source = "Agriculture";
+            //        break;
+
+            //    case "2":
+            //        report.Source = "Buildings";
+            //        break;
+
+            //    case "3":
+            //        report.Source = "Heavy Industry";
+            //        break;
+
+            //    case "4":
+            //        report.Source = "Light Manufactoring, Construction and Forest Resources";
+            //        break;
+
+            //    case "5":
+            //        report.Source = "Oil and Gas";
+            //        break;
+
+            //    case "6":
+            //        report.Source = "Transport";
+            //        break;
+
+            //    case "7":
+            //        report.Source = "Waste";
+            //        break;
+
+            //    case "8":
+            //        report.Source = "Total";
+            //        break;
+
+            //    default:
+            //        Console.WriteLine("Invalid Source Menu Selection.");
+            //        break;
+            //}
+        }
+
+        private static List<string> GetSourceList()
+        {
+            List<string> sources = new();
+
+            try
+            {
+                XmlDocument doc = new();
+                doc.Load(XmlFile);
+
+                XPathNavigator navigator = doc.CreateNavigator()!;
+                string sourceXPath = "//source";
+                XPathNodeIterator sourceIterator = navigator.Select(sourceXPath);
+
+                while (sourceIterator.MoveNext())
+                {
+                    XPathNavigator sourceNode = sourceIterator.Current!;
+                    string source = sourceNode.GetAttribute("description", "");
+
+                    if (!sources.Contains(source))
+                        sources.Add(source);
+                    else
+                        break;
+                }
+            }
+            catch (XmlException ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            catch (XPathException ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+
+            return sources;
         }
 
         private static Dictionary<string, List<string>> GenerateRegionReport()
         {
             Dictionary<string, List<string>> emissionsBySource = new();
 
-            XmlDocument doc = new();
-            doc.Load(XmlFile);
-
-            //XPathNavigator navigator = doc.CreateNavigator()!;
-            //string xpath = $"//region[@name='{report.Region}']/source/emissions[@year>={report.StartingYear} and @year<={report.EndingYear}]";
-
-            //XPathNodeIterator iterator = navigator.Select(xpath);
-            //while (iterator.MoveNext())
-            //{
-            //    XPathNavigator emissionNode = iterator.Current!;
-            //    string key = emissionNode.SelectSingleNode("parent::source/@description")!.Value;
-            //    string value = emissionNode.Value;
-
-            //    if (emissionsBySource.ContainsKey(key))
-            //        emissionsBySource[key].Add(value);
-            //    else
-            //        emissionsBySource.Add(key, new List<string> { value });
-            //}
-
-            XPathNavigator navigator = doc.CreateNavigator()!;
-            string regionXPath = $"//region[@name='{report.Region}']";
-            XPathNodeIterator regionIterator = navigator.Select(regionXPath);
-
-            while (regionIterator.MoveNext())
+            try
             {
-                XPathNavigator regionNode = regionIterator.Current!;
+                XmlDocument doc = new();
+                doc.Load(XmlFile);
 
-                XPathNodeIterator sourceIterator = regionNode.Select("source");
-                while (sourceIterator.MoveNext())
+                //XPathNavigator navigator = doc.CreateNavigator()!;
+                //string xpath = $"//region[@name='{report.Region}']/source/emissions[@year>={report.StartingYear} and @year<={report.EndingYear}]";
+
+                //XPathNodeIterator iterator = navigator.Select(xpath);
+                //while (iterator.MoveNext())
+                //{
+                //    XPathNavigator emissionNode = iterator.Current!;
+                //    string key = emissionNode.SelectSingleNode("parent::source/@description")!.Value;
+                //    string value = emissionNode.Value;
+
+                //    if (emissionsBySource.ContainsKey(key))
+                //        emissionsBySource[key].Add(value);
+                //    else
+                //        emissionsBySource.Add(key, new List<string> { value });
+                //}
+
+                XPathNavigator navigator = doc.CreateNavigator()!;
+                string regionXPath = $"//region[@name='{report.Region}']";
+                XPathNodeIterator regionIterator = navigator.Select(regionXPath);
+
+                while (regionIterator.MoveNext())
                 {
-                    XPathNavigator sourceNode = sourceIterator.Current!;
-                    string sourceDescription = sourceNode.GetAttribute("description", "");
+                    XPathNavigator regionNode = regionIterator.Current!;
 
-                    List<string> emissions = new List<string>();
-
-                    for (int year = int.Parse(report.StartingYear); year <= int.Parse(report.EndingYear); year++)
+                    XPathNodeIterator sourceIterator = regionNode.Select("source");
+                    while (sourceIterator.MoveNext())
                     {
-                        string emissionXPath = $".//emissions[@year='{year}']";
-                        XPathNodeIterator emissionIterator = sourceNode.Select(emissionXPath);
+                        XPathNavigator sourceNode = sourceIterator.Current!;
+                        string sourceDescription = sourceNode.GetAttribute("description", "");
 
-                        string value = emissionIterator.MoveNext() ? emissionIterator.Current!.Value : "-";
-                        emissions.Add(value);
+                        List<string> emissions = new List<string>();
+
+                        for (int year = int.Parse(report.StartingYear); year <= int.Parse(report.EndingYear); year++)
+                        {
+                            string emissionXPath = $".//emissions[@year='{year}']";
+                            XPathNodeIterator emissionIterator = sourceNode.Select(emissionXPath);
+
+                            string value = emissionIterator.MoveNext() ? emissionIterator.Current!.Value : "-";
+                            emissions.Add(value);
+                        }
+
+                        emissionsBySource.Add(sourceDescription, emissions);
                     }
-
-                    emissionsBySource.Add(sourceDescription, emissions);
                 }
+            }
+            catch (XmlException ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            catch (XPathException ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
             }
 
             return emissionsBySource;
@@ -310,52 +418,67 @@ namespace GHGEmissions
         {
             Dictionary<string, List<string>> emissionsByRegion = new();
 
-            XmlDocument doc = new();
-            doc.Load(XmlFile);
-
-            //XPathNavigator navigator = doc.CreateNavigator()!;
-            //string xpath = $"//region/source[@description='{report.Source}']/emissions[@year>={report.StartingYear} and @year<={report.EndingYear}]";
-
-            //XPathNodeIterator iterator = navigator.Select(xpath);
-            //while (iterator.MoveNext())
-            //{
-            //    XPathNavigator emissionNode = iterator.Current!;
-            //    string key = emissionNode.SelectSingleNode("ancestor::region/@name")!.Value;
-            //    string value = emissionNode.Value;
-
-            //    if (emissionsByRegion.ContainsKey(key))
-            //        emissionsByRegion[key].Add(value);
-            //    else
-            //        emissionsByRegion.Add(key, new List<string> { value });
-            //}
-
-            XPathNavigator navigator = doc.CreateNavigator()!;
-            string sourceXPath = $"//source[@description='{report.Source}']";
-            XPathNodeIterator sourceIterator = navigator.Select(sourceXPath);
-
-            while (sourceIterator.MoveNext())
+            try
             {
-                XPathNavigator sourceNode = sourceIterator.Current!;
+                XmlDocument doc = new();
+                doc.Load(XmlFile);
 
-                XPathNodeIterator regionIterator = sourceNode.Select("ancestor::region");
-                while (regionIterator.MoveNext())
+                //XPathNavigator navigator = doc.CreateNavigator()!;
+                //string xpath = $"//region/source[@description='{report.Source}']/emissions[@year>={report.StartingYear} and @year<={report.EndingYear}]";
+
+                //XPathNodeIterator iterator = navigator.Select(xpath);
+                //while (iterator.MoveNext())
+                //{
+                //    XPathNavigator emissionNode = iterator.Current!;
+                //    string key = emissionNode.SelectSingleNode("ancestor::region/@name")!.Value;
+                //    string value = emissionNode.Value;
+
+                //    if (emissionsByRegion.ContainsKey(key))
+                //        emissionsByRegion[key].Add(value);
+                //    else
+                //        emissionsByRegion.Add(key, new List<string> { value });
+                //}
+
+                XPathNavigator navigator = doc.CreateNavigator()!;
+                string sourceXPath = $"//source[@description='{report.Source}']";
+                XPathNodeIterator sourceIterator = navigator.Select(sourceXPath);
+
+                while (sourceIterator.MoveNext())
                 {
-                    XPathNavigator regionNode = regionIterator.Current!;
-                    string regionName = regionNode.GetAttribute("name", "");
+                    XPathNavigator sourceNode = sourceIterator.Current!;
 
-                    List<string> emissions = new List<string>();
-
-                    for (int year = int.Parse(report.StartingYear); year <= int.Parse(report.EndingYear); year++)
+                    XPathNodeIterator regionIterator = sourceNode.Select("ancestor::region");
+                    while (regionIterator.MoveNext())
                     {
-                        string emissionXPath = $"//region[@name='{regionName}']/source[@description='{report.Source}']/emissions[@year='{year}']";
-                        XPathNodeIterator emissionIterator = regionNode.Select(emissionXPath);
+                        XPathNavigator regionNode = regionIterator.Current!;
+                        string regionName = regionNode.GetAttribute("name", "");
 
-                        string value = emissionIterator.MoveNext() ? emissionIterator.Current!.Value : "-";
-                        emissions.Add(value);
+                        List<string> emissions = new List<string>();
+
+                        for (int year = int.Parse(report.StartingYear); year <= int.Parse(report.EndingYear); year++)
+                        {
+                            string emissionXPath = $"//region[@name='{regionName}']/source[@description='{report.Source}']/emissions[@year='{year}']";
+                            XPathNodeIterator emissionIterator = regionNode.Select(emissionXPath);
+
+                            string value = emissionIterator.MoveNext() ? emissionIterator.Current!.Value : "-";
+                            emissions.Add(value);
+                        }
+
+                        emissionsByRegion.Add(regionName, emissions);
                     }
-
-                    emissionsByRegion.Add(regionName, emissions);
                 }
+            }
+            catch (XmlException ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            catch (XPathException ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
             }
 
             return emissionsByRegion;
