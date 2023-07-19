@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GHGEmission
+﻿namespace GHGEmission
 {
 	public class EmissionsReport
 	{
