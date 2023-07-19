@@ -147,7 +147,12 @@ namespace GHGEmission
             for (int i = int.Parse(report.StartingYear); i <= int.Parse(report.EndingYear); i++)
                 Console.Write(i.ToString().PadLeft(10));
 
-            Console.WriteLine("\n" + "------".PadLeft(54) + "----".PadLeft(10) + "----".PadLeft(10) + "----".PadLeft(10) + "----".PadLeft(10) + "----".PadLeft(10));
+            Console.Write("\n" + "------".PadLeft(54));
+
+            for (int i = int.Parse(report.StartingYear); i <= int.Parse(report.EndingYear); i++)
+                Console.Write("----".PadLeft(10));
+
+            Console.WriteLine();
         }
     }
 }
