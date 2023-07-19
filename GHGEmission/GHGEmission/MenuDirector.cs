@@ -49,48 +49,57 @@ namespace GHGEmission
 
         public static void MainMenuListener()
         {
-            Console.Write("Enter your selection: ");
-            string input = Console.ReadLine() ?? "";
-
-            switch (input.ToUpper())
+            bool invalid = true;
+            while (invalid)
             {
-                case "1":
-                    report.StartingYear = GetValidYearInput("\nStarting year (1990 to 2019): ", 1990, 2019);
-                    report.EndingYear = GetValidYearInput($"Ending year ({report.StartingYear} to {int.Parse(report.StartingYear) + 4}): ", int.Parse(report.StartingYear), int.Parse(report.StartingYear) + 4);
-                    break;
+                Console.Write("Enter your selection: ");
+                string input = Console.ReadLine() ?? "";
 
-                case "2":
-                    Console.Clear();
-                    DisplayMenu("Region Selection");
-                    SecondaryMenuListener("Region");
-                    break;
+                switch (input.ToUpper())
+                {
+                    case "1":
+                        report.StartingYear = GetValidYearInput("\nStarting year (1990 to 2019): ", 1990, 2019);
+                        report.EndingYear = GetValidYearInput($"Ending year ({report.StartingYear} to {int.Parse(report.StartingYear) + 4}): ", int.Parse(report.StartingYear), int.Parse(report.StartingYear) + 4);
+                        invalid = false;
+                        break;
 
-                case "3":
-                    Console.Clear();
-                    DisplayMenu("Source Selection");
-                    SecondaryMenuListener("Source");
-                    break;
+                    case "2":
+                        Console.Clear();
+                        DisplayMenu("Region Selection");
+                        SecondaryMenuListener("Region");
+                        invalid = false;
+                        break;
 
-                case "4":
-                    Console.Clear();
-                    Dictionary<string, List<string>> emissionsBySource = ReportDirector.GenerateRegionReport();
-                    ReportDirector.DisplayReport("Region", emissionsBySource);
-                    break;
+                    case "3":
+                        Console.Clear();
+                        DisplayMenu("Source Selection");
+                        SecondaryMenuListener("Source");
+                        invalid = false;
+                        break;
 
-                case "5":
-                    Console.Clear();
-                    Dictionary<string, List<string>> emissionsByRegion = ReportDirector.GenerateSourceReport();
-                    ReportDirector.DisplayReport("Source", emissionsByRegion);
-                    break;
+                    case "4":
+                        Console.Clear();
+                        Dictionary<string, List<string>> emissionsBySource = ReportDirector.GenerateRegionReport();
+                        ReportDirector.DisplayReport("Region", emissionsBySource);
+                        invalid = false;
+                        break;
 
-                case "X":
-                    DataPersistence.SaveDataToXml(ConfigFile, report);
-                    Environment.Exit(0);
-                    break;
+                    case "5":
+                        Console.Clear();
+                        Dictionary<string, List<string>> emissionsByRegion = ReportDirector.GenerateSourceReport();
+                        ReportDirector.DisplayReport("Source", emissionsByRegion);
+                        invalid = false;
+                        break;
 
-                default:
-                    Console.WriteLine("Invalid Main Menu Selection.");
-                    break;
+                    case "X":
+                        DataPersistence.SaveDataToXml(ConfigFile, report);
+                        Environment.Exit(0);
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid Main Menu Selection.\n");
+                        break;
+                }
             }
         }
 
