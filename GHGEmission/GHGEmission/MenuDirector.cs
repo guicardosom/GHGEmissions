@@ -25,18 +25,14 @@ namespace GHGEmission
 
                 case "Region Selection":
                     List<string> regions = GetRegionList();
-
                     for (int i = 0; i < regions.Count; i++)
                         Console.WriteLine($"  ({i + 1}) {regions[i]}");
-
                     break;
 
                 case "Source Selection":
                     List<string> sources = GetSourceList();
-
                     for (int i = 0; i < sources.Count; i++)
                         Console.WriteLine($"  ({i + 1}) {sources[i]}");
-
                     break;
 
                 default:
