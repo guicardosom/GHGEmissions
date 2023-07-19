@@ -1,4 +1,13 @@
-﻿using System.Xml;
+﻿/*
+ * Program:     GHGEmissions.exe
+ * Module:      MenuDirector.cs
+ * Course:      INFO-3138
+ * Coder:       Gui Miranda
+ * Date:        July 19, 2023
+ * Description: A static class responsible for handling the menus interactions.
+ */
+
+using System.Xml;
 using System.Xml.XPath;
 using static GHGEmission.Program;
 

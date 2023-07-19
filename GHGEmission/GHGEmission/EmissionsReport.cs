@@ -1,4 +1,13 @@
-﻿namespace GHGEmission
+﻿/*
+ * Program:     GHGEmissions.exe
+ * Module:      EmissionsReport.cs
+ * Course:      INFO-3138
+ * Coder:       Gui Miranda
+ * Date:        July 19, 2023
+ * Description: A singleton responsible for holding the report's configuration.
+ */
+
+namespace GHGEmission
 {
 	public class EmissionsReport
 	{

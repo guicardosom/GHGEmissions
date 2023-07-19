@@ -2,10 +2,10 @@
  * Program:     GHGEmissions.exe
  * Module:      Program.cs
  * Course:      INFO-3138
+ * Coder:       Gui Miranda
  * Date:        July 11, 2023
- * Description: todo -> A sample solution to the DOM coding exercise involving driving directions.
- *              This program uses the DOM to complete a set of driving directions contained in the XML file
- *              "directions.xml". You will find this file nested within the project's bin\Debug folder.
+ * Description: A C# console (.NET Core) application that uses an XML file for data storage and generates parameterized 
+ * reports based on based on a selected region (province or territory) or based on a selected source of GHGs. 
  */
 
 namespace GHGEmission

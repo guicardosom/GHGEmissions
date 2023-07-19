@@ -1,4 +1,13 @@
-﻿using System.Xml;
+﻿/*
+ * Program:     GHGEmissions.exe
+ * Module:      ReportDirector.cs
+ * Course:      INFO-3138
+ * Coder:       Gui Miranda
+ * Date:        July 19, 2023
+ * Description: A static class responsible for handling the reports and how they're displayed.
+ */
+
+using System.Xml;
 using System.Xml.XPath;
 using static GHGEmission.Program;
 

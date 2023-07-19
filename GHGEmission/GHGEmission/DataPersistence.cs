@@ -1,4 +1,13 @@
-﻿using System.Xml;
+﻿/*
+ * Program:     GHGEmissions.exe
+ * Module:      DataPersistence.cs
+ * Course:      INFO-3138
+ * Coder:       Gui Miranda
+ * Date:        July 19, 2023
+ * Description: A static class responsible for persisting data.
+ */
+
+using System.Xml;
 using static GHGEmission.Program;
 
 namespace GHGEmission
