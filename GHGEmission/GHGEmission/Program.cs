@@ -8,9 +8,7 @@
  *              "directions.xml". You will find this file nested within the project's bin\Debug folder.
  */
 
-using GHGEmission;
-
-namespace GHGEmissions
+namespace GHGEmission
 {
     internal class Program
     {

@@ -1,6 +1,6 @@
 ﻿using System.Xml;
 using System.Xml.XPath;
-using static GHGEmissions.Program;
+using static GHGEmission.Program;
 
 namespace GHGEmission
 {
