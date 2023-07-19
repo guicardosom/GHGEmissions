@@ -47,7 +47,7 @@ namespace GHGEmissions
                     Console.WriteLine($"  (3) To select a different GHG source (currently {report.Source})");
                     Console.WriteLine($"  (4) To learn about {report.Region}'s emissions");
                     Console.WriteLine($"  (5) To learn about the {report.Source} sector's emissions");
-                    Console.WriteLine("  (X) To quit");
+                    Console.WriteLine($"  (X) To quit");
                     break;
 
                 case "Region Selection":
@@ -148,72 +148,17 @@ namespace GHGEmissions
             Console.Write("Enter a region #: ");
             string input = Console.ReadLine() ?? "";
 
-            switch (input)
+            List<string> regions = GetRegionList();
+            if (int.Parse(input) >= 0 && int.Parse(input) < regions.Count)
             {
-                case "1":
-                    report.Region = "Alberta";
-                    break;
-
-                case "2":
-                    report.Region = "British Columbia";
-                    break;
-
-                case "3":
-                    report.Region = "Manitoba";
-                    break;
-
-                case "4":
-                    report.Region = "New Brunswick";
-                    break;
-
-                case "5":
-                    report.Region = "Newfoundland and Labrador";
-                    break;
-
-                case "6":
-                    report.Region = "Northwest Territories";
-                    break;
-
-                case "7":
-                    report.Region = "Northwest Territories and Nunavut";
-                    break;
-
-                case "8":
-                    report.Region = "Nova Scotia";
-                    break;
-
-                case "9":
-                    report.Region = "Nunavut";
-                    break;
-
-                case "10":
-                    report.Region = "Ontario";
-                    break;
-
-                case "11":
-                    report.Region = "Prince Edward Island";
-                    break;
-
-                case "12":
-                    report.Region = "Quebec";
-                    break;
-
-                case "13":
-                    report.Region = "Saskatchewan";
-                    break;
-
-                case "14":
-                    report.Region = "Yukon";
-                    break;
-
-                case "15":
-                    report.Region = "Canada";
-                    break;
-
-                default:
-                    Console.WriteLine("Invalid Region Menu Selection.");
-                    break;
+                for (int i = 0; i < regions.Count; i++)
+                {
+                    if (int.Parse(input) == i + 1)
+                        report.Region = regions[i];
+                }
             }
+            else
+                Console.WriteLine("Invalid Region Menu Selection.");
         }
 
         private static List<string> GetRegionList()
@@ -258,50 +203,16 @@ namespace GHGEmissions
             string input = Console.ReadLine() ?? "";
 
             List<string> sources = GetSourceList();
-            for (int i = 0; i < sources.Count; i++)
+            if (int.Parse(input) >= 0 && int.Parse(input) < sources.Count)
             {
-                if (int.Parse(input) == i + 1)
-                    report.Source = sources[i];
+                for (int i = 0; i < sources.Count; i++)
+                {
+                    if (int.Parse(input) == i + 1)
+                        report.Source = sources[i];
+                }
             }
-
-            //switch (input)
-            //{
-            //    case "1":
-            //        report.Source = "Agriculture";
-            //        break;
-
-            //    case "2":
-            //        report.Source = "Buildings";
-            //        break;
-
-            //    case "3":
-            //        report.Source = "Heavy Industry";
-            //        break;
-
-            //    case "4":
-            //        report.Source = "Light Manufactoring, Construction and Forest Resources";
-            //        break;
-
-            //    case "5":
-            //        report.Source = "Oil and Gas";
-            //        break;
-
-            //    case "6":
-            //        report.Source = "Transport";
-            //        break;
-
-            //    case "7":
-            //        report.Source = "Waste";
-            //        break;
-
-            //    case "8":
-            //        report.Source = "Total";
-            //        break;
-
-            //    default:
-            //        Console.WriteLine("Invalid Source Menu Selection.");
-            //        break;
-            //}
+            else
+                Console.WriteLine("Invalid Source Menu Selection.");
         }
 
         private static List<string> GetSourceList()
@@ -352,22 +263,6 @@ namespace GHGEmissions
             {
                 XmlDocument doc = new();
                 doc.Load(XmlFile);
-
-                //XPathNavigator navigator = doc.CreateNavigator()!;
-                //string xpath = $"//region[@name='{report.Region}']/source/emissions[@year>={report.StartingYear} and @year<={report.EndingYear}]";
-
-                //XPathNodeIterator iterator = navigator.Select(xpath);
-                //while (iterator.MoveNext())
-                //{
-                //    XPathNavigator emissionNode = iterator.Current!;
-                //    string key = emissionNode.SelectSingleNode("parent::source/@description")!.Value;
-                //    string value = emissionNode.Value;
-
-                //    if (emissionsBySource.ContainsKey(key))
-                //        emissionsBySource[key].Add(value);
-                //    else
-                //        emissionsBySource.Add(key, new List<string> { value });
-                //}
 
                 XPathNavigator navigator = doc.CreateNavigator()!;
                 string regionXPath = $"//region[@name='{report.Region}']";
@@ -422,22 +317,6 @@ namespace GHGEmissions
             {
                 XmlDocument doc = new();
                 doc.Load(XmlFile);
-
-                //XPathNavigator navigator = doc.CreateNavigator()!;
-                //string xpath = $"//region/source[@description='{report.Source}']/emissions[@year>={report.StartingYear} and @year<={report.EndingYear}]";
-
-                //XPathNodeIterator iterator = navigator.Select(xpath);
-                //while (iterator.MoveNext())
-                //{
-                //    XPathNavigator emissionNode = iterator.Current!;
-                //    string key = emissionNode.SelectSingleNode("ancestor::region/@name")!.Value;
-                //    string value = emissionNode.Value;
-
-                //    if (emissionsByRegion.ContainsKey(key))
-                //        emissionsByRegion[key].Add(value);
-                //    else
-                //        emissionsByRegion.Add(key, new List<string> { value });
-                //}
 
                 XPathNavigator navigator = doc.CreateNavigator()!;
                 string sourceXPath = $"//source[@description='{report.Source}']";
